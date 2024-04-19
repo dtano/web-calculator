@@ -1,6 +1,6 @@
 import React from 'react';
 import './Calculator.css';
-import { ADDITION, BACK_SPACE, CHANGE_SIGN, CLEAR_ALL, CLEAR_ENTRY, DECIMAL, DIVIDE, EQUALS, FRACTION, MULTIPLY, PERCENTAGE, SQUARED, SQUARE_ROOT, SUBTRACTION } from '../../constants/operators';
+import { ADDITION, BACK_SPACE, CHANGE_SIGN, CLEAR_ALL, CLEAR_ENTRY, DECIMAL, DIVISION, EQUALS, FRACTION, MULTIPLICATION, PERCENTAGE, SQUARED, SQUARE_ROOT, SUBTRACTION } from '../../constants/operators';
 
 interface ButtonsProps {
     showPremiumVersion: boolean,
@@ -31,7 +31,6 @@ const Buttons = ({showPremiumVersion, handleOnPress} : ButtonsProps) => {
     return (
         <div className='buttonsContainer'>
             {showPremiumVersion && <MemoryButtons />}
-            {/* Core buttons will be rendered here */}
             <div className='buttonRow'>
                 {constructButton(PERCENTAGE, OPERATOR_BTN_STYLE)}
                 {constructButton(CLEAR_ENTRY, OPERATOR_BTN_STYLE)}
@@ -42,13 +41,13 @@ const Buttons = ({showPremiumVersion, handleOnPress} : ButtonsProps) => {
                 {constructButton(FRACTION, OPERATOR_BTN_STYLE)}
                 {constructButton(SQUARED, OPERATOR_BTN_STYLE)}
                 {constructButton(SQUARE_ROOT, OPERATOR_BTN_STYLE)}
-                {constructButton(DIVIDE, OPERATOR_BTN_STYLE)}
+                {constructButton(DIVISION, OPERATOR_BTN_STYLE)}
             </div>
             <div className='buttonRow'>
                 {constructButton('7')}
                 {constructButton('8')}
                 {constructButton('9')}
-                {constructButton(MULTIPLY, OPERATOR_BTN_STYLE)}
+                {constructButton(MULTIPLICATION, OPERATOR_BTN_STYLE)}
             </div>
             <div className='buttonRow'>
                 {constructButton('4')}

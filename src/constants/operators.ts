@@ -1,5 +1,5 @@
-export const MULTIPLY = 'X';
-export const DIVIDE = '÷';
+export const MULTIPLICATION = 'X';
+export const DIVISION = '÷';
 export const SUBTRACTION = '-';
 export const ADDITION = '+';
 export const EQUALS = '=';
