@@ -5,11 +5,12 @@ import Calculator from './components/calculator/Calculator';
 
 const App = () => {
   const [showSignUpModal, setShowSignUpModal] = useState(false);
-  
+  const [showPremiumVersion, setShowPremiumVersion] = useState(false);
+
   return (
     <div className="App">
       <AppHeader />
-      <Calculator />
+      <Calculator showPremiumVersion={showPremiumVersion}/>
     </div>
   );
 }

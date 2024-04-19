@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import './Calculator.css';
+import Buttons from './Buttons';
 
-const Calculator = () => {
-    const [showPremiumVersion, setShowPremiumVersion] = useState(false);
+interface CalculatorProps {
+    showPremiumVersion: boolean
+}
+
+const Calculator = ({showPremiumVersion} : CalculatorProps) => {
     const [currentValue, setCurrentValue] = useState("0");
 
     const ValueScreen = () => {
@@ -13,27 +17,17 @@ const Calculator = () => {
         )
     }
 
-    const ButtonsContainer = () => {
-        const MemoryButtons = () => {
-            return (
-                <div>
+    const handleOnPressButton = (value: string): void => {
 
-                </div>
-            )
-        }
-
-        return (
-            <div className='buttonsContainer'>
-                {showPremiumVersion && <MemoryButtons />}
-                {/* Core buttons will be rendered here */}
-            </div>
-        );
     }
 
     return (
-        <div className='calculator'>
-            <ValueScreen />
-            <ButtonsContainer />
+        <div className='calculatorContainer center-screen'>
+            <h3 className='calculatorTitle'>{showPremiumVersion ? 'Advanced' : 'Basic'}</h3>
+            <div className='calculator'>
+                <ValueScreen />
+                <Buttons showPremiumVersion={showPremiumVersion} handleOnPress={handleOnPressButton}/>
+            </div>
         </div>
     );
 }

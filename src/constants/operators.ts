@@ -1,0 +1,14 @@
+export const MULTIPLY = 'X';
+export const DIVIDE = '÷';
+export const SUBTRACTION = '-';
+export const ADDITION = '+';
+export const EQUALS = '=';
+export const SQUARE_ROOT = 'sqrt(x)';
+export const SQUARED = 'x^2';
+export const FRACTION = '1/x';
+export const PERCENTAGE = '%';
+export const CLEAR_ENTRY = 'CE';
+export const CLEAR_ALL = 'C';
+export const BACK_SPACE = '<=';
+export const DECIMAL = '.';
+export const CHANGE_SIGN = "+/-";
