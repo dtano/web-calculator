@@ -1,0 +1,21 @@
+.header {
+    border-bottom: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 5px;
+}
+
+.appTitle {
+    text-align: center;
+    margin: 0;
+}
+
+.goPremiumBtn {
+    color: rgb(44, 143, 236);
+    font-weight: bold;
+    font-size: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}

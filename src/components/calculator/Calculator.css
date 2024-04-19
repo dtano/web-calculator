@@ -1,0 +1,19 @@
+.calculator {
+    background-color: rgb(253, 232, 212);
+    border: 1px solid black;
+    border-radius: 8px;
+
+    width: 35%;
+    height: auto;
+}
+
+.valueContainer {
+    padding: 10px 0px;
+    display: flex;
+    justify-content: end;
+}
+
+.currentValue {
+    font-size: 24px;
+    font-weight: bold;
+}
