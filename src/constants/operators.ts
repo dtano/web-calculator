@@ -10,5 +10,5 @@ export const PERCENTAGE = '%';
 export const CLEAR_ENTRY = 'CE';
 export const CLEAR_ALL = 'C';
 export const BACK_SPACE = '<=';
-export const DECIMAL = '.';
+export const DECIMAL_POINT = '.';
 export const CHANGE_SIGN = "+/-";

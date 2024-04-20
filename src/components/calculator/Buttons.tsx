@@ -1,6 +1,6 @@
 import React from 'react';
 import './Calculator.css';
-import { ADDITION, BACK_SPACE, CHANGE_SIGN, CLEAR_ALL, CLEAR_ENTRY, DECIMAL, DIVISION, EQUALS, FRACTION, MULTIPLICATION, PERCENTAGE, SQUARED, SQUARE_ROOT, SUBTRACTION } from '../../constants/operators';
+import { ADDITION, BACK_SPACE, CHANGE_SIGN, CLEAR_ALL, CLEAR_ENTRY, DECIMAL_POINT, DIVISION, EQUALS, FRACTION, MULTIPLICATION, PERCENTAGE, SQUARED, SQUARE_ROOT, SUBTRACTION } from '../../constants/operators';
 
 interface ButtonsProps {
     showPremiumVersion: boolean,
@@ -64,7 +64,7 @@ const Buttons = ({showPremiumVersion, handleOnPress} : ButtonsProps) => {
             <div className='buttonRow'>
                 {constructButton(CHANGE_SIGN)}
                 {constructButton('0')}
-                {constructButton(DECIMAL)}
+                {constructButton(DECIMAL_POINT)}
                 {constructButton(EQUALS, EQUALS_BTN_STYLE)}
             </div>
         </div>
