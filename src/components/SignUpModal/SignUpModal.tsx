@@ -1,65 +1,148 @@
 import React, { useState } from 'react';
 import styles from './SignUpModal.module.css';
+import { SignUpRequestData } from '../../api/authApi';
+import * as authApi from '../../api/authApi';
+import { AxiosError } from 'axios';
+import { StripeElementsOptions, loadStripe } from '@stripe/stripe-js';
+import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 
 interface SignUpModalProps {
     setIsOpen: (value: boolean) => void
 }
 
-interface CreditCardInfo {
-    number: string,
-    expiration: string,
-    cvc: string
+interface FormProps {
+    setIsLoading: (value: boolean) => void,
+    isLoading: boolean
 }
 
-const CreditCardForm = () => {
-    const [cardInfo, setCardInfo] = useState<CreditCardInfo>({
-        number: '',
-        expiration: '',
-        cvc: ''
+interface SignUpInfo {
+    name: string,
+    email: string
+}
+
+const stripePromise = loadStripe('pk_test_51P78N501BuXQPtCdX7nyy2bbQlbbco4jHlL2uNT3MhdTkWtvMpp0uKdtBYTw4qnJmbjBceV3ZPH3j1rH4BDwa2h000QEKLqxG6');
+
+const SignUpForm = ({setIsLoading, isLoading}: FormProps) => {
+    const [signUpData, setSignUpData] = useState<SignUpInfo>({
+        name: '',
+        email: ''
     });
+
+    const [error, setError] = useState<string | null>(null);
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    
+    const stripe = useStripe();
+    const elements = useElements();
+
+    const clearFields = () => {
+        setSignUpData({
+            name: '',
+            email: ''
+        });
+    }
+
+    const onSubmitSignUpForm = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if(!stripe || !elements){
+            return;
+        }
+
+        setShowSuccessMessage(false);
+        setError(null);
+        setIsLoading(true);
+
+        // Trigger form validation and wallet collection
+        const {error: submitError} = await elements.submit();
+        if (submitError) {
+            setError(submitError.message ?? "Payment Error");
+            return;
+        }
+
+        const confirmationTokenResult = await stripe?.createConfirmationToken({
+            elements,
+            params: {
+            }
+        });
+        if(!confirmationTokenResult.confirmationToken || !!confirmationTokenResult.error){
+            return;
+        }
+
+        // Construct DTO to send to API
+        const req: SignUpRequestData = {
+            ...signUpData,
+            confirmationToken: confirmationTokenResult.confirmationToken.id
+        }
+
+        // Call API
+        try {
+            const response = await authApi.signUp(req);
+            console.log("SIGN UP RESPONSE", response);
+            setIsLoading(false);
+
+            if(!response){
+                throw new Error("Failed to sign up. Please try again");
+            }
+
+            // Set success message and clear all fields
+            clearFields();
+            setShowSuccessMessage(true);
+        }catch(e: unknown){
+            console.log("Error Here: ", e);
+            setIsLoading(false);
+            if (typeof e === "string") {
+                setError(e.toUpperCase());
+            } else if (e instanceof AxiosError){
+                setError(e.response?.data)
+            } else if (e instanceof Error) {
+                setError(e.message);
+            }
+            return;
+        }
+    }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setCardInfo({ ...cardInfo, [name]: value });
+        setSignUpData({ ...signUpData, [name]: value });
     };
 
     return (
-        <form className={styles.creditCardForm}>
-            <div className={styles.formGroup}>
-                <label>Card number</label>
-                <input 
-                    type="text"
-                    name="number"
-                    value={cardInfo.number}
-                    onChange={handleInputChange}
-                    placeholder="1234 1234 1234 1234"
-                />
-            </div>
-            <div>
+        <div>
+            {showSuccessMessage && <div className={styles.successMessage}>Successful Sign Up</div>}
+            {!!error && <div className={styles.errorMessage}>{error}</div>}
+            <form onSubmit={onSubmitSignUpForm}>
                 <div className={styles.formGroup}>
-                    <label>Expiration</label>
-                    <input
-                        type="text"
-                        name="expiry"
-                        value={cardInfo.expiration}
-                        onChange={handleInputChange}
-                        placeholder="MM / YY"
-                    />
+                    <label>Name</label>
+                    <input type="text" name="name" value={signUpData.name} onChange={handleInputChange} disabled={isLoading}/>
                 </div>
                 <div className={styles.formGroup}>
-                    <label>CVC</label>
-                    <input
-                        type="text"
-                        name="cvc"
-                        value={cardInfo.cvc}
-                        onChange={handleInputChange}
-                        placeholder="CVC"
-                    />
+                    <label>Email</label>
+                    <input type="email" name="email" value={signUpData.email} onChange={handleInputChange} disabled={isLoading}/>
                 </div>
-            </div>
-            <div className={styles.formGroup}>
+                <PaymentElement />
+                <input type="submit" value="Submit" />
+            </form>
+        </div>
+    )
+}
 
+const LoginForm = ({setIsLoading, isLoading}: FormProps) => {
+    const [error, setError] = useState<string | null>(null);
+    const onSubmitLoginForm = () => {
+
+    }
+
+    return (
+        <form>
+            <div className={styles.formGroup}>
+                <label>Email</label>
+                <input type="text" name="email" disabled={isLoading}/>
             </div>
+            <div className={styles.formGroup}>
+                <label>Password</label>
+                <input type="password" name="password" disabled={isLoading}/>
+            </div>
+            <input type="submit" value="Submit" />
         </form>
     )
 }
@@ -68,50 +151,12 @@ const SignUpModal = ({setIsOpen} : SignUpModalProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [showSignUpPage, setShowSignupPage] = useState(true);
     const [showLoginPage, setShowLoginPage] = useState(false);
-    // Maybe place credit card info here?
 
-    const SignUpForm = () => {
-        const onSubmitSignUpForm = () => {
-
-        }
-
-        return (
-            <form onSubmit={onSubmitSignUpForm}>
-                <div className={styles.formGroup}>
-                    <label>Name</label>
-                    <input type="text" name="name" />
-                </div>
-                <div className={styles.formGroup}>
-                    <label>Email</label>
-                    <input type="text" name="email" />
-                </div>
-                <div className={styles.formGroup}>
-                    <label>Password</label>
-                    <input type="password" name="password" />
-                </div>
-                <CreditCardForm />
-                <input type="submit" value="Submit" />
-            </form>
-        )
-    }
-
-    const LoginForm = () => {
-        const onSubmitLoginForm = () => {
-
-        }
-
-        return (
-            <form>
-                <div className={styles.formGroup}>
-                    <label>Email</label>
-                    <input type="text" name="email" />
-                </div>
-                <div className={styles.formGroup}>
-                    <label>Password</label>
-                    <input type="password" name="password" />
-                </div>
-            </form>
-        )
+    const options: StripeElementsOptions = {
+        mode: 'payment',
+        amount: 1000,
+        currency: 'aud',
+        paymentMethodTypes: ['card']
     }
 
     const openSignUpForm = () => {
@@ -131,17 +176,18 @@ const SignUpModal = ({setIsOpen} : SignUpModalProps) => {
                     <div className={styles.modal}>
                         <div className={styles.modalHeader}>
                             <h5 className={styles.heading}>Dialog</h5>
-                            {/* <button className={styles.closeBtn} onClick={() => setIsOpen(false)}>
-                                X
-                            </button> */}
                             <div className={styles.formSelectorTabs}>
                                 <div className={`${styles.formTab} ${!showSignUpPage ? styles.unselectedTab : ''}`} onClick={openSignUpForm}>Sign Up</div>
                                 <div className={`${styles.formTab} ${!showLoginPage ? styles.unselectedTab : ''}`} onClick={openLoginForm}>Sign In</div>
                             </div>
                         </div>
                         <div className={styles.modalContent}>
-                            {!!showSignUpPage && <SignUpForm />}
-                            {!!showLoginPage && <LoginForm />}
+                            {!!showSignUpPage && 
+                                <Elements stripe={stripePromise} options={options}>
+                                    <SignUpForm setIsLoading={setIsLoading} isLoading={isLoading}/>
+                                </Elements>
+                            }
+                            {!!showLoginPage && <LoginForm setIsLoading={setIsLoading} isLoading={isLoading}/>}
                         </div>
                 </div>
             </div>

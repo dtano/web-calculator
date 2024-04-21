@@ -18,7 +18,7 @@
   
 .modal {
     width: 450px;
-    height: 200px;
+    height: 400px;
     background: white;
     color: white;
     z-index: 10;
@@ -74,4 +74,9 @@
 
 .unselectedTab {
     background-color: grey;
+}
+
+.errorMessage {
+    margin-bottom: 5px;
+    color: red;
 }
