@@ -1,26 +1,46 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import AppHeader from './components/header/AppHeader';
 import Calculator from './components/calculator/Calculator';
-import SignUpModal from './components/SignUpModal/SignUpModal';
+import GoPremiumModal from './components/SignUpModal/GoPremiumModal';
 
 const App = () => {
-  const [showSignUpModal, setShowSignUpModal] = useState(false);
+  const [showGoPremiumModal, setShowGoPremiumModal] = useState(false);
   const [showPremiumVersion, setShowPremiumVersion] = useState(false);
 
-  const onClickGoPremiumBtn = () => {
-    console.log("Clicking go premium");
-    if(!showSignUpModal){
-      console.log("Set to true");
-      setShowSignUpModal(true);
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    if(!!user){
+      setShowPremiumVersion(true);
+    }else{
+      setShowPremiumVersion(false);
     }
+  }, []);
+
+  const onClickGoPremiumBtn = () => {
+    if(!showGoPremiumModal){
+      setShowGoPremiumModal(true);
+    }
+  }
+
+  const onSuccessfulLogin = (jwtToken: string) => {
+    console.log("SUCCESS LOGIN!");
+    localStorage.setItem('user', jwtToken);
+    setShowPremiumVersion(true);
+    setShowGoPremiumModal(false);
+  }
+
+  const onLogout = () => {
+    localStorage.removeItem('user');
+
+    setShowPremiumVersion(false);
   }
 
   return (
     <div className="App">
-      <AppHeader onClickGoPremiumBtn={onClickGoPremiumBtn} showPremiumVersion={showPremiumVersion}/>
+      <AppHeader onClickGoPremiumBtn={onClickGoPremiumBtn} showPremiumVersion={showPremiumVersion} onLogout={onLogout}/>
       <Calculator showPremiumVersion={showPremiumVersion}/>
-      {!!showSignUpModal && <SignUpModal setIsOpen={setShowSignUpModal}/>}
+      {!!showGoPremiumModal && <GoPremiumModal setIsOpen={setShowGoPremiumModal} onSuccessfulLogin={onSuccessfulLogin}/>}
     </div>
   );
 }

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import './Calculator.css';
+import React, { useEffect, useState } from 'react';
+import styles from './Calculator.module.css';
 import Buttons from './Buttons';
 import { ADDITION, BACK_SPACE, CHANGE_SIGN, CLEAR_ALL, CLEAR_ENTRY, DECIMAL_POINT, DIVISION, EQUALS, FRACTION, MULTIPLICATION, PERCENTAGE, SQUARED, SQUARE_ROOT, SUBTRACTION } from '../../constants/operators';
 
@@ -18,10 +18,14 @@ const Calculator = ({showPremiumVersion} : CalculatorProps) => {
     const [showPreviousValue, setShowPreviousValue] = useState(false);
     const [isEqualSignPressed, setIsEqualSignPressed] = useState(false);
 
+    useEffect(() => {
+        clearAll();
+    }, [showPremiumVersion])
+
     const ValueScreen = () => {
         return (
-            <div className='valueContainer'>
-                <span className='currentValue'>{!hasError ? (showPreviousValue ? previousValue : displayedValue) : 'Error'}</span>
+            <div className={styles.valueContainer}>
+                <span className={styles.currentValue}>{!hasError ? (showPreviousValue ? previousValue : displayedValue) : 'Error'}</span>
             </div>
         )
     }
@@ -187,9 +191,9 @@ const Calculator = ({showPremiumVersion} : CalculatorProps) => {
     }
 
     return (
-        <div className='calculatorContainer center-screen'>
-            <h3 className='calculatorTitle'>{showPremiumVersion ? 'Advanced' : 'Basic'}</h3>
-            <div className='calculator'>
+        <div className={`${styles.calculatorContainer} center-screen`}>
+            <h3 className={styles.calculatorTitle}>{showPremiumVersion ? 'Advanced' : 'Basic'}</h3>
+            <div className={styles.calculator}>
                 <ValueScreen />
                 <Buttons showPremiumVersion={showPremiumVersion} handleOnPress={handleOnPressButton}/>
             </div>

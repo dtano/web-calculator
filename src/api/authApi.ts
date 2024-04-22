@@ -1,7 +1,7 @@
 import axios from './axios';
 
 const SIGN_UP_URL = '/api/auth/register';
-const LOGIN_URL = '/auth/login';
+const LOGIN_URL = '/api/auth/login';
 
 export interface SignUpRequestData {
     name: string,
