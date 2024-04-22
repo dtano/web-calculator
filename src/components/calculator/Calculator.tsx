@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Calculator.module.css';
 import Buttons from './Buttons';
-import { ADDITION, BACK_SPACE, CHANGE_SIGN, CLEAR_ALL, CLEAR_ENTRY, DECIMAL_POINT, DIVISION, EQUALS, FRACTION, MULTIPLICATION, PERCENTAGE, SQUARED, SQUARE_ROOT, SUBTRACTION } from '../../constants/operators';
+import { ADDITION, BACK_SPACE, CHANGE_SIGN, CLEAR_ALL, CLEAR_ENTRY, DECIMAL_POINT, DIVISION, EQUALS, FRACTION, MEMORY_ADD, MEMORY_CLEAR, MEMORY_RECALL, MEMORY_STORE, MEMORY_SUBTRACT, MULTIPLICATION, PERCENTAGE, SQUARED, SQUARE_ROOT, SUBTRACTION, isMemoryFunction } from '../../constants/operators';
 
 interface CalculatorProps {
     showPremiumVersion: boolean
@@ -17,9 +17,14 @@ const Calculator = ({showPremiumVersion} : CalculatorProps) => {
     const [previousSymbol, setPreviousSymbol] = useState<string | null>(null);
     const [showPreviousValue, setShowPreviousValue] = useState(false);
     const [isEqualSignPressed, setIsEqualSignPressed] = useState(false);
+    const [isMemoryButtonPressed, setIsMemoryButtonPressed] = useState(false);
+
+    // Memory states here
+    const [memoryRegister, setMemoryRegister] = useState<number | null>(null);
 
     useEffect(() => {
         clearAll();
+        clearMemory();
     }, [showPremiumVersion])
 
     const ValueScreen = () => {
@@ -32,7 +37,7 @@ const Calculator = ({showPremiumVersion} : CalculatorProps) => {
 
     const determineDisplayedValue = (num: string) => {
         setDisplayedValue(prev => {
-            if(!prev || (prev === DEFAULT_VALUE && num !== DECIMAL_POINT) || (isEqualSignPressed && displayedValue?.charAt(1) !== '.')){
+            if(!prev || (prev === DEFAULT_VALUE && num !== DECIMAL_POINT) || (isEqualSignPressed && displayedValue?.charAt(1) !== '.') || isMemoryButtonPressed){
                 if(num === DECIMAL_POINT){
                     return `0${num}`;
                 }
@@ -85,6 +90,11 @@ const Calculator = ({showPremiumVersion} : CalculatorProps) => {
                 setDisplayedValue(changedValue.toString());
                 break;
             default:
+                if(isMemoryFunction(symbol)){
+                    handleMemoryFunctions(symbol);
+                    return;
+                }
+                
                 // If previous symbol is null, then we need to set the total using currentValue
                 // Try and make this logic clearer
                 if(!displayedValue || displayedValue === DEFAULT_VALUE || !previousSymbol){
@@ -109,6 +119,29 @@ const Calculator = ({showPremiumVersion} : CalculatorProps) => {
                 
                 break;
         }
+    }
+
+    const handleMemoryFunctions = (func: string) => {
+        switch(func){
+            case MEMORY_CLEAR:
+                setMemoryRegister(null);
+                break;
+            case MEMORY_RECALL:
+                setDisplayedValue(!!memoryRegister ? memoryRegister.toString() : '0');
+                break;
+            case MEMORY_STORE:
+                setMemoryRegister(parseFloat(displayedValue))
+                break;
+            case MEMORY_ADD:
+                setMemoryRegister(prev => (prev ?? 0) + parseFloat(displayedValue));
+                break;
+            case MEMORY_SUBTRACT:
+                setMemoryRegister(prev => (prev ?? 0) - parseFloat(displayedValue));
+                break;
+            
+        }
+
+        setIsMemoryButtonPressed(true);
     }
 
     const prepareNextOperation = (symbol: string, newPreviousValue: string = displayedValue) => {
@@ -152,6 +185,11 @@ const Calculator = ({showPremiumVersion} : CalculatorProps) => {
         setPreviousValue(null);
     }
 
+    const clearMemory = () => {
+        setMemoryRegister(null);
+        setIsMemoryButtonPressed(false);
+    }
+
     const triggerBackSpace = () => {
         if(!displayedValue || displayedValue === DEFAULT_VALUE) return;
 
@@ -188,6 +226,10 @@ const Calculator = ({showPremiumVersion} : CalculatorProps) => {
                 (value === DECIMAL_POINT && isEqualSignPressed)
             );
         }
+
+        if(isMemoryButtonPressed && !isMemoryFunction(value)){
+            setIsMemoryButtonPressed(false);
+        }
     }
 
     return (
@@ -195,7 +237,7 @@ const Calculator = ({showPremiumVersion} : CalculatorProps) => {
             <h3 className={styles.calculatorTitle}>{showPremiumVersion ? 'Advanced' : 'Basic'}</h3>
             <div className={styles.calculator}>
                 <ValueScreen />
-                <Buttons showPremiumVersion={showPremiumVersion} handleOnPress={handleOnPressButton}/>
+                <Buttons showPremiumVersion={showPremiumVersion} handleOnPress={handleOnPressButton} isMemoryActive={!!memoryRegister}/>
             </div>
         </div>
     );

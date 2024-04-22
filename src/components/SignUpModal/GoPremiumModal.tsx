@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './GoPremiumModal.module.css';
 import { StripeElementsOptions, loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
@@ -17,6 +17,12 @@ const GoPremiumModal = ({setIsOpen, onSuccessfulLogin} : GoPremiumModalProps) =>
     const [showSignUpPage, setShowSignupPage] = useState(true);
     const [showLoginPage, setShowLoginPage] = useState(false);
 
+    useEffect(() => {
+        if(showSignUpPage){
+            setIsLoading(true);
+        }
+    }, [showSignUpPage]);
+
     const options: StripeElementsOptions = {
         mode: 'payment',
         amount: 1000,
@@ -25,11 +31,13 @@ const GoPremiumModal = ({setIsOpen, onSuccessfulLogin} : GoPremiumModalProps) =>
     }
 
     const openSignUpForm = () => {
+        if(isLoading) return;
         setShowSignupPage(true);
         setShowLoginPage(false);
     }
 
     const openLoginForm = () => {
+        if(isLoading) return;
         setShowLoginPage(true);
         setShowSignupPage(false);
     }
@@ -40,7 +48,6 @@ const GoPremiumModal = ({setIsOpen, onSuccessfulLogin} : GoPremiumModalProps) =>
                 <div className={styles.centered}>
                     <div className={styles.modal}>
                         <div className={styles.modalHeader}>
-                            <h5 className={styles.heading}>Dialog</h5>
                             <div className={styles.formSelectorTabs}>
                                 <div className={`${styles.formTab} ${!showSignUpPage ? styles.unselectedTab : ''}`} onClick={openSignUpForm}>Sign Up</div>
                                 <div className={`${styles.formTab} ${!showLoginPage ? styles.unselectedTab : ''}`} onClick={openLoginForm}>Sign In</div>

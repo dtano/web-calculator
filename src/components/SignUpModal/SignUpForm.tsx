@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './GoPremiumModal.module.css';
 import { SignUpRequestData } from '../../api/authApi';
 import * as authApi from '../../api/authApi';
@@ -83,7 +83,6 @@ const SignUpForm = ({setIsLoading, isLoading, onSuccessfulLogin}: FormProps) => 
 
             onSuccessfulLogin(response.data.jwtToken);
         }catch(e: unknown){
-            console.log("Error Here: ", e);
             setIsLoading(false);
             if (typeof e === "string") {
                 setError(e.toUpperCase());
@@ -101,21 +100,27 @@ const SignUpForm = ({setIsLoading, isLoading, onSuccessfulLogin}: FormProps) => 
         setSignUpData({ ...signUpData, [name]: value });
     };
 
+    const onCreditCardFormReady = () => {
+        setIsLoading(false);
+    }
+
     return (
         <div>
             {showSuccessMessage && <div className={styles.successMessage}>Successful Sign Up. Please check your email for the password</div>}
             {!!error && <div className={styles.errorMessage}>{error}</div>}
             <form onSubmit={onSubmitSignUpForm}>
-                <div className={styles.formGroup}>
-                    <label>Name</label>
-                    <input type="text" name="name" value={signUpData.name} onChange={handleInputChange} disabled={isLoading}/>
+                <div className={styles.horizontalGroup}>
+                    <div className={styles.formGroup}>
+                        <label>Name</label>
+                        <input type="text" name="name" value={signUpData.name} onChange={handleInputChange} disabled={isLoading}/>
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label>Email</label>
+                        <input type="email" name="email" value={signUpData.email} onChange={handleInputChange} disabled={isLoading}/>
+                    </div>
                 </div>
-                <div className={styles.formGroup}>
-                    <label>Email</label>
-                    <input type="email" name="email" value={signUpData.email} onChange={handleInputChange} disabled={isLoading}/>
-                </div>
-                <PaymentElement />
-                <input type="submit" value="Submit" />
+                <PaymentElement className={styles.creditCardForm} onReady={onCreditCardFormReady}/>
+                <input className={styles.submitBtn} type="submit" value="Submit" disabled={isLoading}/>
             </form>
         </div>
     )

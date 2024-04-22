@@ -24,12 +24,9 @@ const LoginForm = ({setIsLoading, isLoading, onSuccessfulLogin}: FormProps) => {
     
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Collect the login info
 
-        // Send it to the backend
         try{
             const response = await authApi.login(loginInfo);
-            console.log("Login response", response);
             if(!response || !response.data?.token){
                 setError("Failed to login. Please try again");
                 return;
@@ -37,7 +34,6 @@ const LoginForm = ({setIsLoading, isLoading, onSuccessfulLogin}: FormProps) => {
 
             onSuccessfulLogin(response.data.token);
         }catch(e: unknown){
-            console.log("Error Here: ", e);
             setIsLoading(false);
             if (typeof e === "string") {
                 setError(e.toUpperCase());
@@ -51,7 +47,7 @@ const LoginForm = ({setIsLoading, isLoading, onSuccessfulLogin}: FormProps) => {
     }
 
     return (
-        <div>
+        <div className={styles.loginForm}>
             {!!error && <div className={styles.errorMessage}>{error}</div>}
             <form onSubmit={onSubmit}>
                 <div className={styles.formGroup}>
@@ -62,7 +58,7 @@ const LoginForm = ({setIsLoading, isLoading, onSuccessfulLogin}: FormProps) => {
                     <label>Password</label>
                     <input type="password" name="password" value={loginInfo.password} onChange={handleInputChange} disabled={isLoading}/>
                 </div>
-                <input type="submit" value="Submit" />
+                <input className={styles.submitBtn} type="submit" value="Submit" />
             </form>
         </div>
     )

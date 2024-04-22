@@ -1,36 +1,39 @@
 import React from 'react';
 import styles from './Calculator.module.css';
-import { ADDITION, BACK_SPACE, CHANGE_SIGN, CLEAR_ALL, CLEAR_ENTRY, DECIMAL_POINT, DIVISION, EQUALS, FRACTION, MULTIPLICATION, PERCENTAGE, SQUARED, SQUARE_ROOT, SUBTRACTION } from '../../constants/operators';
+import { ADDITION, BACK_SPACE, CHANGE_SIGN, CLEAR_ALL, CLEAR_ENTRY, DECIMAL_POINT, DIVISION, EQUALS, FRACTION, MEMORY_ADD, MEMORY_CLEAR, MEMORY_RECALL, MEMORY_STORE, MEMORY_SUBTRACT, MULTIPLICATION, PERCENTAGE, SQUARED, SQUARE_ROOT, SUBTRACTION } from '../../constants/operators';
 
 interface ButtonsProps {
     showPremiumVersion: boolean,
-    handleOnPress: (value: string) => void
+    handleOnPress: (value: string) => void,
+    isMemoryActive: boolean
 }
 
+const BASIC_BTN_STYLE = styles.basicBtn;
 const OPERATOR_BTN_STYLE = styles.operatorBtn;
 const EQUALS_BTN_STYLE = styles.equalsBtn;
+const MEMORY_BTN_STYLE = styles.memoryBtn;
 
-const Buttons = ({showPremiumVersion, handleOnPress} : ButtonsProps) => {
-    const MemoryButtons = () => {
-        return (
-            <div className={styles.buttonRow}>
-                <button>{'MC'}</button>
-                <button>{'MR'}</button>
-                <button>{'M+'}</button>
-                <button>{'M-'}</button>
-                <button>{'MS'}</button>
-                <button>{'Mv'}</button>
-            </div>
-        )
-    }
-
+const Buttons = ({showPremiumVersion, handleOnPress, isMemoryActive} : ButtonsProps) => {
     const onPressButton = (event: React.MouseEvent<HTMLElement>) => {
         const value: string = (event.target as HTMLElement).innerText
         handleOnPress(value)
     }
 
-    const constructButton = (symbol: string, style?: string) => {
-        return <button onClick={onPressButton} className={`${styles.calculatorBtn} ${!!style ? style : ""}`}>{symbol}</button>
+    const constructButton = (symbol: string, style: string=BASIC_BTN_STYLE, disabled: boolean=false) => {
+        return <button onClick={onPressButton} className={`${styles.calculatorBtn} ${style}`} disabled={disabled}>{symbol}</button>
+    }
+
+    const MemoryButtons = () => {
+        return (
+            <div className={styles.buttonRow}>
+                {constructButton(MEMORY_CLEAR, MEMORY_BTN_STYLE, !isMemoryActive)}
+                {constructButton(MEMORY_RECALL, MEMORY_BTN_STYLE, !isMemoryActive)}
+                {constructButton(MEMORY_ADD, MEMORY_BTN_STYLE)}
+                {constructButton(MEMORY_SUBTRACT, MEMORY_BTN_STYLE)}
+                {constructButton(MEMORY_STORE, MEMORY_BTN_STYLE)}
+                {constructButton('Mv', MEMORY_BTN_STYLE, !isMemoryActive)}
+            </div>
+        )
     }
 
     return (

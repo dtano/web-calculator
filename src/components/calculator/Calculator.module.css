@@ -20,6 +20,10 @@
     justify-content: end;
 }
 
+.memoryIndicator {
+    float: left;
+}
+
 .currentValue {
     font-size: 36px;
     font-weight: bold;
@@ -48,11 +52,15 @@
     padding: 10px 0;
 
     border: none;
+}
+
+.basicBtn {
     background-color: rgb(216, 204, 194);
 }
 
-.calculatorBtn:hover {
-    background-color: rgb(138, 131, 122);
+.memoryBtn {
+    font-size: 16px;
+    background: none;
 }
 
 .operatorBtn {
@@ -62,4 +70,16 @@
 .equalsBtn {
     background-color: rgb(143, 58, 24);
     color: white;
+}
+
+.fadedBtn {
+    color: rgba(0, 0, 0, 0.466);
+}
+
+.memoryBtn:hover {
+    background-color: rgb(138, 131, 122);
+}
+
+.calculatorBtn:hover {
+    background-color: rgb(138, 131, 122);
 }

@@ -24,7 +24,6 @@ const App = () => {
   }
 
   const onSuccessfulLogin = (jwtToken: string) => {
-    console.log("SUCCESS LOGIN!");
     localStorage.setItem('user', jwtToken);
     setShowPremiumVersion(true);
     setShowGoPremiumModal(false);
